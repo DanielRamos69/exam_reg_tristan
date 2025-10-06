@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <body>
+    <h2>Set a new password</h2>
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat,msg in msgs %}<p>{{msg}}</p>{% endfor %}
+    {% endwith %}
+    <form method="post">
+      <label>New password <input type="password" name="password" required></label><br>
+      <label>Confirm password <input type="password" name="confirm" required></label><br>
+      <button type="submit">Update password</button>
+    </form>
+  </body>
+</html>
