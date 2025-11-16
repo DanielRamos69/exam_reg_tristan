@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Home</title></head>
+<head><meta charset="utf-8" /><title>Home</title></head>
 <body>
   <h1>Home</h1>
 
   {% if user_name %}
-    <p>Welcome, {{ user_name }}!</p>
+    <p>Welcome, {{ user_name }}! (Role: {{ session.get('role', 'student') }})</p>
     <p><a href="{{ url_for('logout') }}">Logout</a></p>
   {% else %}
     <p><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('signup') }}">Sign Up</a></p>
