@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Login</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+</head>
 <body>
   <h1>Login</h1>
 
@@ -14,19 +17,26 @@
     {% endif %}
   {% endwith %}
 
-  <form method="post">
-  <label>Email
-    <input type="text" name="email" required
-           pattern="^\d{10}@student\.csn\.edu$"
-           title="8001234567@student.csn.edu">
-  </label><br>
+  <form method="post" action="{{ url_for('login') }}">
+    <label>
+      Email
+      <input
+        type="text"
+        name="email"
+        required
+        pattern="^\d{10}@student\.csn\.edu$|^[A-Za-z]+\.[A-Za-z]+@csn\.edu$"
+        title="Student: 10digits@student.csn.edu  |  Faculty: firstname.lastname@csn.edu" />
+    </label><br />
 
-  <label>Password
-    <input type="password" name="password" required
-           pattern="^\d{10}$"
-           title="Your 10-digit NSHE">
-  </label><br>
+    <label>
+      Password
+      <input type="password" name="password" required />
+    </label><br />
 
-  <button type="submit">Login</button>
-</form>
+    <button type="submit">Login</button>
+  </form>
+
+  <p><a href="{{ url_for('signup') }}">Create an account</a></p>
+</body>
+</html>
 
