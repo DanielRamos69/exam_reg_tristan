@@ -5,9 +5,8 @@
   <title>Faculty Dashboard</title>
   <style>
     body { font-family: system-ui, Arial, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .who { color: #555; }
-    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+    .top { display: flex; justify-content: space-between; align-items: center; }
+    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-top: 1rem; }
     .calendar { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
     .cal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; background: #f7f7f7; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #eee; }
@@ -17,27 +16,22 @@
     .day { font-size: 0.9rem; color: #444; margin-bottom: 0.25rem; }
     .session { font-size: 0.85rem; margin: 0.25rem 0; padding: 0.35rem; border-radius: 6px; background: #fff9ed; border: 1px solid #ffe5bf; }
     .muted { color: #999; }
-    .btn { display: inline-block; padding: 0.35rem 0.7rem; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem; text-decoration: none; }
+    .btn { display: inline-block; padding: 0.25rem 0.5rem; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem; text-decoration: none; }
     .sidebar { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem; }
-    .messages { list-style: none; padding-left: 0; }
   </style>
 </head>
 <body>
   <div class="top">
-    <div>
-      <h1 style="display:inline;">Faculty Dashboard</h1>
-      <span class="who"> — {{ session.get('user_name','Faculty') }} ({{ session.get('role','faculty') }})</span>
-    </div>
+    <h1>Faculty Dashboard</h1>
     <div>
       <a class="btn" href="{{ url_for('faculty_new_session') }}">+ Create New Exam Session</a>
-      &nbsp;|&nbsp;
       <a class="btn" href="{{ url_for('logout') }}">Logout</a>
     </div>
   </div>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <ul class="messages">
+      <ul>
         {% for c,m in messages %}
           <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
         {% endfor %}
@@ -69,9 +63,10 @@
             <div class="day">{{ day }}</div>
             {% for s in by_day.get(iso, []) %}
               <div class="session">
-                <div><strong>{{ s.exam_code }}</strong> @ {{ s.session_datetime.strftime('%I:%M %p') }}</div>
+                <div><strong>{{ s.exam_code }}</strong> @ {{ s.time_str }}–{{ s.end_str }}</div>
                 <div>{{ s.campus_name }} • {{ s.building_name }} {{ s.room_number }}</div>
-                <div>Seats: {{ s.booked }}/{{ s.capacity }}{% if s.booked >= s.capacity %} (Full){% endif %}</div>
+                <div>Seats: {{ s.booked }}/{{ s.capacity }}</div>
+                <div>Duration: {{ s.duration_minutes }} min</div>
               </div>
             {% endfor %}
           </div>
@@ -86,9 +81,9 @@
           {% for s in upcoming %}
             <li style="margin-bottom: 0.5rem;">
               <strong>{{ s.exam_code }}</strong>,
-              {{ s.session_datetime.strftime('%b %d, %Y %I:%M %p') }},
-              {{ s.campus_name }} ({{ s.building_name }} {{ s.room_number }})<br/>
-              Seats: {{ s.booked }}/{{ s.capacity }}
+              {{ s.session_datetime.strftime('%b %d, %Y') }} {{ s.time_str }}–{{ s.end_str }},
+              {{ s.campus_name }} ({{ s.building_name }} {{ s.room_number }})
+              <br/>Seats: {{ s.booked }}/{{ s.capacity }} • {{ s.duration_minutes }} min
             </li>
           {% endfor %}
         </ul>
