@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>New Exam Session</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>Create Exam Session</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin: 0.5rem 0; }
+    select, input { padding: 0.4rem; min-width: 240px; }
+    .row { display: flex; gap: 0.5rem; align-items: center; }
+    .btn { padding: 0.5rem 1rem; }
+  </style>
+</head>
 <body>
-  <h1>Create New Exam Session</h1>
-  <p><a href="{{ url_for('faculty_portal') }}">⟵ Back</a></p>
+  <h1>Create Exam Session</h1>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -15,34 +24,39 @@
     {% endif %}
   {% endwith %}
 
-  <form method="post">
-    <label>Exam
+  <form method="post" action="{{ url_for('faculty_new_session') }}">
+    <label>
+      Exam
       <select name="exam_id" required>
-        <option value="">-- choose exam --</option>
+        <option value="" disabled selected>Choose exam…</option>
         {% for e in exams %}
           <option value="{{ e.id }}">{{ e.exam_code }}</option>
         {% endfor %}
       </select>
-    </label><br>
+    </label>
 
-    <label>Location
+    <label>
+      Location
       <select name="location_id" required>
-        <option value="">-- choose location --</option>
+        <option value="" disabled selected>Choose location…</option>
         {% for l in locations %}
-          <option value="{{ l.id }}">{{ l.campus_name }} / {{ l.building_name }} / {{ l.room_number }}</option>
+          <option value="{{ l.id }}">{{ l.campus_name }} – {{ l.building_name }} {{ l.room_number }}</option>
         {% endfor %}
       </select>
-    </label><br>
+    </label>
 
-    <label>Date/Time (YYYY-MM-DD HH:MM)
-      <input name="session_datetime" placeholder="2025-11-25 14:00" required>
-    </label><br>
+    <div class="row">
+      <label>Date <input type="date" name="date" required></label>
+      <label>Start time <input type="time" name="time" required></label>
+    </div>
 
-    <label>Capacity
-      <input type="number" name="capacity" value="20" min="1" required>
-    </label><br>
+    <div class="row">
+      <label>Capacity <input type="number" name="capacity" min="1" value="20" required></label>
+      <label>Duration (minutes) <input type="number" name="duration_minutes" min="15" step="5" value="90" required></label>
+    </div>
 
-    <button type="submit">Create</button>
+    <button class="btn" type="submit">Create</button>
+    <a class="btn" href="{{ url_for('faculty_portal') }}">Back</a>
   </form>
 </body>
 </html>
