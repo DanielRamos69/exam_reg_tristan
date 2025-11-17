@@ -5,19 +5,18 @@
   <title>Student Dashboard</title>
   <style>
     body { font-family: system-ui, Arial, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .who { color: #555; }
-    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+    .top { display: flex; justify-content: space-between; align-items: center; }
+    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-top: 1rem; }
     .calendar { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
     .cal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; background: #f7f7f7; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #eee; }
-    .dow, .cell { padding: 0.5rem; border-right: 1px solid #eee; border-bottom: 1px solid #eee; min-height: 110px; }
+    .dow, .cell { padding: 0.5rem; border-right: 1px solid #eee; border-bottom: 1px solid #eee; min-height: 120px; }
     .dow { background: #fafafa; font-weight: 600; text-align: center; }
     .cell:last-child, .dow:last-child { border-right: 0; }
     .day { font-size: 0.9rem; color: #444; margin-bottom: 0.25rem; }
-    .session { font-size: 0.85rem; margin: 0.25rem 0; padding: 0.35rem; border-radius: 6px; background: #f0f7ff; border: 1px solid #dbe9ff; }
+    .session { font-size: 0.85rem; margin: 0.35rem 0; padding: 0.45rem; border-radius: 6px; background: #f0f7ff; border: 1px solid #dbe9ff; }
     .muted { color: #999; }
-    .btn { display: inline-block; padding: 0.35rem 0.7rem; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem; text-decoration: none; }
+    .btn { display: inline-block; padding: 0.3rem 0.6rem; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem; text-decoration: none; }
     .btn[disabled] { opacity: 0.6; cursor: not-allowed; }
     .sidebar { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem; }
     .messages { list-style: none; padding-left: 0; }
@@ -27,8 +26,7 @@
   <div class="top">
     <h1>Student Dashboard</h1>
     <div>
-      <span class="who">Hi, {{ session.get('user_name','Student') }} ({{ session.get('role','student') }})</span>
-      &nbsp;|&nbsp;
+      <a class="btn" href="{{ url_for('student_history') }}">Appointment History</a>
       <a class="btn" href="{{ url_for('logout') }}">Logout</a>
     </div>
   </div>
@@ -44,6 +42,7 @@
   {% endwith %}
 
   <div class="grid">
+    <!-- Calendar -->
     <div class="calendar">
       <div class="cal-header">
         <a class="btn" href="{{ url_for('student_portal', year=prev_year, month=prev_month) }}">&larr; Prev</a>
@@ -57,7 +56,7 @@
         {% endfor %}
 
         {# leading blanks #}
-        {% set first_weekday = cal.weekday(year, month, 1) %}
+        {% set first_weekday = cal.weekday(year, month, 1) %} {# Mon=0...Sun=6 #}
         {% set lead = (first_weekday + 1) % 7 %}
         {% for _ in range(lead) %}<div class="cell muted"></div>{% endfor %}
 
@@ -67,20 +66,33 @@
           {% set iso = (year|string) ~ '-' ~ ('%02d' % month) ~ '-' ~ ('%02d' % day) %}
           <div class="cell">
             <div class="day">{{ day }}</div>
+
             {% for s in by_day.get(iso, []) %}
               <div class="session">
-                <div><strong>{{ s.exam_code }}</strong> @ {{ s.session_datetime.strftime('%I:%M %p') }}</div>
+                <div>
+                  <strong>{{ s.exam_code }}</strong>
+                  @ {{ s.session_datetime.strftime("%I:%M %p") }} ({{ s.duration_minutes }} min)
+                </div>
                 <div>{{ s.campus_name }} • {{ s.building_name }} {{ s.room_number }}</div>
                 <div>Seats: {{ s.booked }}/{{ s.capacity }}{% if s.is_full %} (Full){% endif %}</div>
 
                 {% if s.already_registered %}
-                  <form method="post" action="{{ url_for('student_cancel', registration_id=s.registration_id) }}" style="margin-top: 0.35rem;">
-                    <button class="btn" type="submit">Cancel</button>
-                  </form>
+                  {# show Cancel (needs registration_id) #}
+                  {% if s.registration_id %}
+                    <form method="post"
+                          action="{{ url_for('student_cancel', registration_id=s.registration_id) }}"
+                          style="margin-top: 0.35rem;">
+                      <button class="btn" type="submit">Cancel</button>
+                    </form>
+                  {% else %}
+                    <button class="btn" disabled>Registered</button>
+                  {% endif %}
                 {% elif s.is_full %}
                   <button class="btn" disabled>Full</button>
                 {% else %}
-                  <form method="post" action="{{ url_for('student_register', session_id=s.id) }}" style="margin-top: 0.35rem;">
+                  <form method="post"
+                        action="{{ url_for('student_register', session_id=s.id) }}"
+                        style="margin-top: 0.35rem;">
                     <button class="btn" type="submit">Register</button>
                   </form>
                 {% endif %}
@@ -91,24 +103,34 @@
       </div>
     </div>
 
+    <!-- Sidebar -->
     <aside class="sidebar">
       <h3>Upcoming Sessions</h3>
       {% if upcoming %}
         <ul>
           {% for s in upcoming %}
-            <li style="margin-bottom: 0.5rem;">
+            <li style="margin-bottom: 0.6rem;">
               <strong>{{ s.exam_code }}</strong>,
               {{ s.session_datetime.strftime('%b %d, %Y %I:%M %p') }},
-              {{ s.campus_name }} ({{ s.building_name }} {{ s.room_number }})<br/>
+              {{ s.campus_name }} ({{ s.building_name }} {{ s.room_number }})
+              <br/>
               Seats: {{ s.booked }}/{{ s.capacity }}
               {% if s.already_registered %}
-                <form method="post" action="{{ url_for('student_cancel', registration_id=s.registration_id) }}" style="display:inline;">
-                  <button class="btn" type="submit">Cancel</button>
-                </form>
+                {% if s.registration_id %}
+                  <form method="post"
+                        action="{{ url_for('student_cancel', registration_id=s.registration_id) }}"
+                        style="display:inline;">
+                    <button class="btn" type="submit">Cancel</button>
+                  </form>
+                {% else %}
+                  <button class="btn" disabled>Registered</button>
+                {% endif %}
               {% elif s.is_full %}
                 <button class="btn" disabled>Full</button>
               {% else %}
-                <form method="post" action="{{ url_for('student_register', session_id=s.id) }}" style="display:inline;">
+                <form method="post"
+                      action="{{ url_for('student_register', session_id=s.id) }}"
+                      style="display:inline;">
                   <button class="btn" type="submit">Register</button>
                 </form>
               {% endif %}
