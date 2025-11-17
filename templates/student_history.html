@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>My Reservations</title></head>
+<body>
+  <h1>My Reservations</h1>
+  <p><a href="{{ url_for('student_portal') }}">⟵ Back</a> | <a href="{{ url_for('logout') }}">Logout</a></p>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul>
+        {% for c,m in messages %}
+          <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if rows %}
+    <table border="1" cellpadding="6">
+      <thead>
+        <tr>
+          <th>Reg ID</th><th>Exam</th><th>Date/Time</th><th>Location</th><th>Status</th><th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td>{{ r.registration_id }}</td>
+            <td>{{ r.exam_code }}</td>
+            <td>{{ r.session_datetime }}</td>
+            <td>{{ r.campus_name }} / {{ r.building_name }} / {{ r.room_number }}</td>
+            <td>{{ 'Cancelled' if r.cancelled else 'Active' }}</td>
+            <td>
+              {% if not r.cancelled %}
+                <form method="post" action="{{ url_for('student_cancel', registration_id=r.registration_id) }}">
+                  <button type="submit">Cancel</button>
+                </form>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No reservations yet.</p>
+  {% endif %}
+</body>
+</html>
