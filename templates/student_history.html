@@ -1,50 +1,67 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>My Reservations</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>Appointment History</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.6rem; border-bottom: 1px solid #eee; text-align: left; }
+    th { background: #f7f7f7; }
+    .muted { color: #777; }
+    .badge { padding: 0.15rem 0.4rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 0.8rem; }
+    .badge-ok { background: #eefbea; border-color: #bfe8b8; }
+    .badge-cxl { background: #fff0f0; border-color: #f3c2c2; }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .btn { display: inline-block; padding: 0.35rem 0.7rem; border: 1px solid #ccc; border-radius: 6px; background: white; text-decoration: none; }
+  </style>
+</head>
 <body>
-  <h1>My Reservations</h1>
-  <p><a href="{{ url_for('student_portal') }}">⟵ Back</a> | <a href="{{ url_for('logout') }}">Logout</a></p>
-
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for c,m in messages %}
-          <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+  <div class="top">
+    <h1>Appointment History</h1>
+    <div>
+      <a class="btn" href="{{ url_for('student_portal') }}">&larr; Back to Calendar</a>
+      <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+  </div>
 
   {% if rows %}
-    <table border="1" cellpadding="6">
+    <table>
       <thead>
         <tr>
-          <th>Reg ID</th><th>Exam</th><th>Date/Time</th><th>Location</th><th>Status</th><th>Action</th>
+          <th>Exam</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Duration</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Registered</th>
         </tr>
       </thead>
       <tbody>
         {% for r in rows %}
           <tr>
-            <td>{{ r.registration_id }}</td>
-            <td>{{ r.exam_code }}</td>
-            <td>{{ r.session_datetime }}</td>
-            <td>{{ r.campus_name }} / {{ r.building_name }} / {{ r.room_number }}</td>
-            <td>{{ 'Cancelled' if r.cancelled else 'Active' }}</td>
+            <td><strong>{{ r.exam_code }}</strong></td>
+            <td>{{ r.session_datetime.strftime('%b %d, %Y') }}</td>
+            <td>{{ r.session_datetime.strftime('%I:%M %p') }}</td>
+            <td>{{ r.duration_minutes or 90 }} min</td>
+            <td>{{ r.campus_name }} — {{ r.building_name }} {{ r.room_number }}</td>
             <td>
-              {% if not r.cancelled %}
-                <form method="post" action="{{ url_for('student_cancel', registration_id=r.registration_id) }}">
-                  <button type="submit">Cancel</button>
-                </form>
+              {% if r.cancelled %}
+                <span class="badge badge-cxl">Canceled{% if r.cancelled_at %} ({{ r.cancelled_at.strftime('%b %d, %Y') }}){% endif %}</span>
               {% else %}
-                —
+                <span class="badge badge-ok">Completed / Attended</span>
               {% endif %}
+            </td>
+            <td class="muted">
+              {% if r.registered_at %}{{ r.registered_at.strftime('%b %d, %Y %I:%M %p') }}{% else %}—{% endif %}
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
   {% else %}
-    <p>No reservations yet.</p>
+    <p class="muted">No appointments yet.</p>
   {% endif %}
 </body>
 </html>
