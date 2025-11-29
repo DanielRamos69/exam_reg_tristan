@@ -1,1 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Make Appointment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bd:#ddd; --muted:#777; }
+    body { font-family: system-ui, Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { margin: 0 0 1rem 0; }
+    .topbar { display: flex; gap: .5rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+    .spacer { flex: 1; }
+    .btn { display: inline-block; padding: .4rem .7rem; border: 1px solid var(--bd); border-radius: 8px; text-decoration: none; color: inherit; background: #fff; cursor: pointer; font-size: .95rem; }
+    .btn[disabled] { opacity: .6; cursor: not-allowed; }
+    .panel { border: 1px solid var(--bd); border-radius: 10px; padding: 1rem; }
+    label { display: block; margin: .75rem 0 .3rem; font-weight: 600; }
+    select, button { padding: .5rem .6rem; font-size: 1rem; }
+    select { width: 100%; max-width: 600px; }
+    .messages { list-style: none; padding-left: 0; }
+    .messages li { margin: .35rem 0; }
+    .muted { color: var(--muted); }
+    .help { font-size: .9rem; color: var(--muted); margin-top: .25rem; }
+    .list { margin-top: 1rem; }
+    .row { border: 1px solid var(--bd); border-radius: 8px; padding: .6rem .75rem; margin-top: .5rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem 1rem; }
+    .pair div:first-child { color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
 
+  <div class="topbar">
+    <strong>Student</strong>
+    <span class="spacer"></span>
+    <a class="btn" href="{{ url_for('student_history') }}">Appointment History</a>
+    <a class="btn" href="{{ url_for('student_make_appointment') }}">Make Appointment</a>
+    <a class="btn" href="{{ url_for('student_cancel_page') }}">Cancel Appointments</a>
+    <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+  </div>
+
+  <h1>Make an Appointment</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="messages">
+        {% for c, m in messages %}
+          <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if sessions and sessions|length > 0 %}
+    <div class="panel">
+      <form method="post" action="{{ url_for('student_make_appointment') }}">
+        <label for="session_id">Choose an exam session</label>
+        <select id="session_id" name="session_id" required>
+          {% for s in sessions %}
+            <option value="{{ s.id }}">
+              {{ s.exam_code }} — {{ s.session_datetime.strftime("%b %d, %Y %I:%M %p") }}
+              — {{ s.campus_name }} {{ s.building_name }} {{ s.room_number }}
+              — Seats: {{ s.booked }}/{{ s.capacity }}
+            </option>
+          {% endfor %}
+        </select>
+        <div class="help">Only sessions you are not currently registered for are shown.</div>
+
+        <div style="margin-top: .9rem;">
+          <button class="btn" type="submit">Register</button>
+          <a class="btn" href="{{ url_for('student_portal') }}">Back to Dashboard</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="list">
+      <h3>Session Details</h3>
+      {% for s in sessions %}
+        <div class="row">
+          <div style="font-weight: 600;">{{ s.exam_code }} &middot; {{ s.description }}</div>
+          <div class="grid" style="margin-top:.4rem;">
+            <div class="pair">
+              <div>Date &amp; Time</div>
+              <div>{{ s.session_datetime.strftime("%A, %b %d, %Y %I:%M %p") }}</div>
+            </div>
+            <div class="pair">
+              <div>Duration</div>
+              <div>{{ s.duration_minutes }} minutes</div>
+            </div>
+            <div class="pair">
+              <div>Location</div>
+              <div>{{ s.campus_name }} — {{ s.building_name }} {{ s.room_number }}</div>
+            </div>
+            <div class="pair">
+              <div>Capacity</div>
+              <div>{{ s.booked }} / {{ s.capacity }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <p class="muted">No available sessions to register right now (you may already be registered for all visible sessions).</p>
+    <p>
+      <a class="btn" href="{{ url_for('student_portal') }}">Back to Dashboard</a>
+    </p>
+  {% endif %}
+
+</body>
+</html>
