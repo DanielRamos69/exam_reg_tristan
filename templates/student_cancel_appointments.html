@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Cancel Appointments</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .top { display: flex; gap: .5rem; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .btn { display: inline-block; padding: .45rem .7rem; border: 1px solid #ccc; border-radius: 6px; background: white; text-decoration: none; cursor: pointer; }
+    .btn-danger { border-color: #e88; background: #fee; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: .75rem 1rem; margin-bottom: .6rem; }
+    .muted { color: #777; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .actions { display: flex; gap: .5rem; align-items: center; }
+    ul.messages { list-style: none; padding: 0; margin: 0 0 1rem; }
+    ul.messages li { margin: .25rem 0; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div>
+      <strong>Cancel Appointments</strong>
+    </div>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('student_portal') }}">Back to Dashboard</a>
+      <a class="btn" href="{{ url_for('student_make_appointment') }}">Make Appointment</a>
+      <a class="btn" href="{{ url_for('student_history') }}">Appointment History</a>
+      <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+  </div>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="messages">
+        {% for c, m in messages %}
+          <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  {% if active_regs and active_regs|length > 0 %}
+    {% for reg in active_regs %}
+      <div class="card">
+        <div class="row">
+          <div>
+            <div><strong>{{ reg.exam_code }}</strong></div>
+            <div class="muted">
+              {{ reg.session_datetime.strftime("%b %d, %Y") }}
+              @ {{ reg.session_datetime.strftime("%I:%M %p") }}
+              • {{ reg.campus_name }} — {{ reg.building_name }} {{ reg.room_number }}
+            </div>
+          </div>
+          <div class="actions">
+            <form method="post" action="{{ url_for('student_cancel', registration_id=reg.registration_id) }}">
+              <button type="submit" class="btn btn-danger">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">You don’t have any upcoming appointments to cancel.</p>
+  {% endif %}
+</body>
+</html>
