@@ -1,41 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Login</title>
+    <meta charset="UTF-8">
+    <title>CSN Exam Registration - Login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f6fa;
+            font-family: Arial, sans-serif;
+        }
+        .csn-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: #00345f;
+            color: #ffffff;
+        }
+        .csn-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: #ffb81c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: #00345f;
+        }
+        .csn-header-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .container {
+            width: 380px;
+            margin: 80px auto;
+            background: #ffffff;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 22px;
+            color: #00345f;
+        }
+        p.sub-text {
+            margin: 0 0 20px;
+            color: #6b6b6b;
+            font-size: 14px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 7px 0 15px;
+            border: 1px solid #d7d7d7;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f2f3f5;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #002f55;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #001e38;
+        }
+        .demo-note {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #6c6c6c;
+        }
+        .error {
+            color: #c0392b;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Login</h1>
+<div class="csn-header">
+    <div class="csn-logo">CSN</div>
+    <div class="csn-header-title">Exam Registration System</div>
+</div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for c,m in messages %}
-          <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
-        {% endfor %}
-      </ul>
+<div class="container">
+    <h2>Sign In</h2>
+    <p class="sub-text">Use your CSN or CSN Student email</p>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
     {% endif %}
-  {% endwith %}
 
-  <form method="post" action="{{ url_for('login') }}">
-    <label>
-      Email
-      <input
-        type="text"
-        name="email"
-        required
-        pattern="^\d{10}@student\.csn\.edu$|^[A-Za-z]+\.[A-Za-z]+@csn\.edu$"
-        title="Student: 10digits@student.csn.edu  |  Faculty: firstname.lastname@csn.edu" />
-    </label><br />
+    <form method="POST">
+        <input type="text" name="email" placeholder="Email Address">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Sign In</button>
+    </form>
 
-    <label>
-      Password
-      <input type="password" name="password" required />
-    </label><br />
-
-    <button type="submit">Login</button>
-  </form>
-
-  <p><a href="{{ url_for('signup') }}">Create an account</a></p>
+    <p class="demo-note">
+        Students: your_email@student.csn.edu<br>
+        Faculty: your_email@csn.edu
+    </p>
+</div>
 </body>
 </html>
