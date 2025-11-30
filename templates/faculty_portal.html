@@ -1,96 +1,254 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Faculty Dashboard</title>
-  <style>
-    body { font-family: system-ui, Arial, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    .top { display: flex; justify-content: space-between; align-items: center; }
-    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-top: 1rem; }
-    .calendar { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-    .cal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; background: #f7f7f7; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #eee; }
-    .dow, .cell { padding: 0.5rem; border-right: 1px solid #eee; border-bottom: 1px solid #eee; min-height: 110px; }
-    .dow { background: #fafafa; font-weight: 600; text-align: center; }
-    .cell:last-child, .dow:last-child { border-right: 0; }
-    .day { font-size: 0.9rem; color: #444; margin-bottom: 0.25rem; }
-    .session { font-size: 0.85rem; margin: 0.25rem 0; padding: 0.35rem; border-radius: 6px; background: #fff9ed; border: 1px solid #ffe5bf; }
-    .muted { color: #999; }
-    .btn { display: inline-block; padding: 0.25rem 0.5rem; border: 1px solid #ccc; border-radius: 6px; background: white; cursor: pointer; font-size: 0.85rem; text-decoration: none; }
-    .sidebar { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Faculty Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            font-family: Arial, sans-serif;
+            color: var(--fg);
+        }
+        :root {
+            --csn-blue: #00345f;
+            --csn-gold: #ffb81c;
+            --bg: #f5f6fa;
+            --fg: #1a1a1a;
+            --card-bg: #ffffff;
+            --border: #dadada;
+            --subtext: #6b6b6b;
+            --input-bg: #f5f6fa;
+            --table-header-bg: #f3f4f6;
+            --table-row-alt: #fafafa;
+        }
+        .dark-mode {
+            --bg: #0f172a;
+            --fg: #f3f4f6;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --subtext: #cbd5e1;
+            --input-bg: #1e293b;
+            --table-header-bg: #334155;
+            --table-row-alt: #1e293b;
+        }
+        .csn-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: var(--csn-blue);
+            color: white;
+        }
+        .csn-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--csn-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--csn-blue);
+        }
+        .csn-header-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            font-size: 26px;
+            margin-bottom: 2px;
+        }
+        .subtitle {
+            color: var(--subtext);
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .stat-title {
+            font-size: 13px;
+            color: var(--subtext);
+            margin-bottom: 4px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .filter-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        .filter-bar input,
+        .filter-bar select {
+            padding: 9px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--fg);
+            font-size: 13px;
+        }
+        .export-btn {
+            padding: 10px 16px;
+            background: var(--csn-blue);
+            border-radius: 8px;
+            border: none;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        thead {
+            background: var(--table-header-bg);
+            color: white;
+        }
+        th, td {
+            padding: 12px 10px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+        tbody tr:nth-child(even) {
+            background: var(--table-row-alt);
+        }
+        .name-link {
+            color: var(--csn-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .name-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+    </script>
 </head>
 <body>
-  <div class="top">
-    <h1>Faculty Dashboard</h1>
-    <div>
-      <a class="btn" href="{{ url_for('faculty_new_session') }}">+ Create New Exam Session</a>
-      <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+
+<!-- HEADER -->
+<div class="csn-header">
+    <div class="csn-logo">CSN</div>
+    <div class="csn-header-title">Exam Registration System</div>
+    <div style="margin-left:auto; display:flex; gap:14px; align-items:center;">
+        <button onclick="toggleDarkMode()" class="export-btn">Toggle Dark Mode</button>
+        <a href="{{ url_for('logout') }}"><button class="export-btn">Logout</button></a>
     </div>
-  </div>
+</div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for c,m in messages %}
-          <li><strong>{{ c|capitalize }}:</strong> {{ m }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+<div class="page-wrapper">
+    <h1>Exam Registration Overview</h1>
+    <p class="subtitle">View and manage all student exam registrations</p>
 
-  <div class="grid">
-    <div class="calendar">
-      <div class="cal-header">
-        <a class="btn" href="{{ url_for('faculty_portal', year=prev_year, month=prev_month) }}">&larr; Prev</a>
-        <div><strong>{{ year }}</strong> – {{ cal.month_name[month] }}</div>
-        <a class="btn" href="{{ url_for('faculty_portal', year=next_year, month=next_month) }}">Next &rarr;</a>
-      </div>
-
-      <div class="cal-grid">
-        {% for d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] %}
-          <div class="dow">{{ d }}</div>
-        {% endfor %}
-
-        {% set first_weekday = cal.weekday(year, month, 1) %}
-        {% set lead = (first_weekday + 1) % 7 %}
-        {% for _ in range(lead) %}<div class="cell muted"></div>{% endfor %}
-
-        {% set last_day = cal.monthrange(year, month)[1] %}
-        {% for day in range(1, last_day+1) %}
-          {% set iso = (year|string) ~ '-' ~ ('%02d' % month) ~ '-' ~ ('%02d' % day) %}
-          <div class="cell">
-            <div class="day">{{ day }}</div>
-            {% for s in by_day.get(iso, []) %}
-              <div class="session">
-                <div><strong>{{ s.exam_code }}</strong> @ {{ s.time_str }}–{{ s.end_str }}</div>
-                <div>{{ s.campus_name }} • {{ s.building_name }} {{ s.room_number }}</div>
-                <div>Seats: {{ s.booked }}/{{ s.capacity }}</div>
-                <div>Duration: {{ s.duration_minutes }} min</div>
-              </div>
-            {% endfor %}
-          </div>
-        {% endfor %}
-      </div>
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-title">Total Registrations</div>
+            <div class="stat-value">{{ total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Confirmed</div>
+            <div class="stat-value">{{ confirmed }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Pending</div>
+            <div class="stat-value">{{ pending }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">This Week</div>
+            <div class="stat-value">{{ this_week }}</div>
+        </div>
     </div>
 
-    <aside class="sidebar">
-      <h3>Upcoming Sessions</h3>
-      {% if upcoming %}
-        <ul>
-          {% for s in upcoming %}
-            <li style="margin-bottom: 0.5rem;">
-              <strong>{{ s.exam_code }}</strong>,
-              {{ s.session_datetime.strftime('%b %d, %Y') }} {{ s.time_str }}–{{ s.end_str }},
-              {{ s.campus_name }} ({{ s.building_name }} {{ s.room_number }})
-              <br/>Seats: {{ s.booked }}/{{ s.capacity }} • {{ s.duration_minutes }} min
-            </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="muted">No sessions this month yet.</p>
-      {% endif %}
-    </aside>
-  </div>
+    <!-- FILTER / EXPORT BAR -->
+    <form method="GET" class="filter-bar">
+        <input type="text" name="search" placeholder="Search by student ID or name" value="{{ search }}">
+        <select name="exam_type">
+            <option value="">Exam Type</option>
+            <option value="Midterm">Midterm</option>
+            <option value="Final">Final</option>
+            <option value="Certification">Certification</option>
+            <option value="Makeup">Makeup</option>
+        </select>
+        <select name="session">
+            <option value="">Session</option>
+            <option value="Fall 2024">Fall 2024</option>
+            <option value="Spring 2025">Spring 2025</option>
+            <option value="Summer 2025">Summer 2025</option>
+        </select>
+        <select name="status">
+            <option value="">Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+        </select>
+        <button type="submit" class="export-btn">Apply Filters</button>
+        <a href="{{ url_for('export_csv') }}"><button type="button" class="export-btn">Export CSV</button></a>
+    </form>
+
+    <!-- REGISTRATIONS TABLE -->
+    <table>
+        <thead>
+        <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Exam Type</th>
+            <th>Session</th>
+            <th>Courses</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for r in registrations %}
+            <tr>
+                <td>{{ r.student_id }}</td>
+                <td><a href="{{ url_for('faculty_registration_detail', reg_id=r.id) }}" class="name-link">{{ r.full_name }}</a></td>
+                <td>{{ r.email }}</td>
+                <td>{{ r.exam_type }}</td>
+                <td>{{ r.session }}</td>
+                <td>{{ r.courses }}</td>
+                <td>{{ r.status }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" style="text-align:center;">No registrations found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
