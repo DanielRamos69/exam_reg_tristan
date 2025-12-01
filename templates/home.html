@@ -1,31 +1,123 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Home</title></head>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- GOOGLE FONT -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    *{ box-sizing: border-box; }
+    :root {
+      --bd:#e5e7eb;
+      --muted:#6b7280;
+      --blue:#2563eb;
+      --indigo:#4f46e5;
+    }
+    body {
+      font-family:'Inter', system-ui, Arial, sans-serif;
+      background:#f5f7fa;
+      max-width:1100px;
+      margin:2rem auto;
+      padding:0 1rem;
+      color:#111827;
+    }
+
+    h1 {
+      font-size:28px;
+      font-weight:700;
+      margin:0 0 1rem 0;
+      background:linear-gradient(to right,var(--blue),var(--indigo));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    .panel {
+      background:#ffffff;
+      border:1px solid var(--bd);
+      border-radius:14px;
+      padding:16px 20px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom:1rem;
+      font-size:14px;
+    }
+
+    .btn {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 12px;
+      border:1px solid var(--bd);
+      border-radius:10px;
+      background:#fff;
+      font-size:13px;
+      font-weight:600;
+      text-decoration:none;
+      box-shadow:0 1px 3px rgba(0,0,0,0.07);
+      cursor:pointer;
+      transition:0.15s ease;
+    }
+    .btn:hover {
+      background:#f3f4f6;
+      transform:translateY(-1px);
+      box-shadow:0 3px 5px rgba(0,0,0,0.1);
+    }
+
+    ul.messages {
+      background:#ffffff;
+      border:1px solid var(--bd);
+      border-left:4px solid var(--blue);
+      border-radius:10px;
+      padding:10px 16px;
+      margin:0 0 1rem;
+      list-style:none;
+      font-size:13px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.03);
+    }
+    ul.messages li { margin:.35rem 0; }
+    ul.messages strong { text-transform: capitalize; }
+
+    a { color:var(--blue); font-weight:600; font-size:13px; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+  </style>
+</head>
 <body>
-  <h1>Home</h1>
 
-  {% if user_name %}
-    <p>Welcome, {{ user_name }}! (Role: {{ session.get('role', 'student') }})</p>
-    <p>
-      {% if session.get('role') == 'faculty' %}
-        <a href="{{ url_for('faculty_portal') }}">Faculty Dashboard</a>
-      {% else %}
-        <a href="{{ url_for('student_portal') }}">Student Dashboard</a>
-      {% endif %}
-      | <a href="{{ url_for('logout') }}">Logout</a>
-    </p>
-  {% else %}
-    <p><a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('signup') }}">Sign Up</a></p>
-  {% endif %}
+  <div class="panel">
+    <h1>Home</h1>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul>
-        {% for cat,msg in messages %}
-          <li><strong>{{ cat|capitalize }}:</strong> {{ msg }}</li>
-        {% endfor %}
-      </ul>
+    <!-- PRESERVED CONDITIONAL ROLE NAVIGATION -->
+    {% if user_name %}
+      <p>Welcome, {{ user_name }}! (Role: {{ session.get('role', 'student') }})</p>
+      <p>
+        {% if session.get('role') == 'faculty' %}
+          <a class="btn" href="{{ url_for('faculty_portal') }}">Faculty Dashboard</a>
+        {% else %}
+          <a class="btn" href="{{ url_for('student_portal') }}">Student Dashboard</a>
+        {% endif %}
+        <a class="btn" href="{{ url_for('logout') }}">Logout</a>
+      </p>
+    {% else %}
+      <p><a class="btn" href="{{ url_for('login') }}">Login</a> <a class="btn" href="{{ url_for('signup') }}">Sign Up</a></p>
     {% endif %}
-  {% endwith %}
+
+    <!-- PRESERVED FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="messages">
+          {% for cat,msg in messages %}
+            <li><strong>{{ cat }}:</strong> {{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+
 </body>
 </html>
