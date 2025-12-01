@@ -4,76 +4,197 @@
   <meta charset="utf-8" />
   <title>Sign Up</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- GOOGLE FONT -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
   <style>
-    body { font-family: system-ui, Arial, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
-    h1 { margin-bottom: 0.5rem; }
-    form label { display: block; margin: 0.5rem 0; }
-    input[type="text"], input[type="password"] { padding: 0.5rem; width: 100%; max-width: 420px; }
-    fieldset { border: 0; padding: 0; margin: 0.5rem 0 0; }
-    .messages { padding: 0; list-style: none; }
-    .messages li { margin: 0.25rem 0; }
-    .messages strong { text-transform: capitalize; }
-    button { margin-top: 0.75rem; padding: 0.6rem 1rem; cursor: pointer; }
+    *{ box-sizing: border-box; }
+    :root {
+      --bd: #e5e7eb;
+      --muted: #6b7280;
+      --blue:#2563eb;
+      --indigo:#4f46e5;
+    }
+    body {
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+      background: #f5f7fa;
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      color: #111827;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 1rem;
+      background: linear-gradient(to right, var(--blue), var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* PANEL CARD SURFACE */
+    .panel {
+      background:#ffffff;
+      border:1px solid var(--bd);
+      border-radius:14px;
+      padding:18px 20px;
+      margin-bottom:1.2rem;
+      box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    /* INPUTS */
+    input[type="text"],
+    input[type="password"],
+    input[name="full_name"],
+    input[name="email"],
+    input[name="password"],
+    input[name="confirm"] {
+      padding:10px;
+      width:100%;
+      max-width:420px;
+      border:1px solid var(--bd);
+      border-radius:10px;
+      font-size:14px;
+      background:#fff;
+      box-shadow:0 1px 2px rgba(0,0,0,0.05);
+      margin-top:5px;
+      display:block;
+    }
+
+    /* LABELS */
+    form label {
+      display: block;
+      font-weight:600;
+      font-size:14px;
+      color:#374151;
+      margin:0.6rem 0;
+    }
+
+    /* BUTTONS */
+    .btn, button[type="submit"] {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 14px;
+      border:1px solid var(--bd);
+      border-radius:10px;
+      background:#ffffff;
+      text-decoration:none;
+      font-size:13px;
+      font-weight:600;
+      box-shadow:0 1px 3px rgba(0,0,0,0.07);
+      cursor:pointer;
+      transition:0.15s ease;
+    }
+    .btn:hover, button[type="submit"]:hover {
+      background:#f3f4f6;
+      transform:translateY(-1px);
+      box-shadow:0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    /* FLASH MESSAGES (preserved logic, restyled surface) */
+    ul.messages {
+      background:#ffffff;
+      border:1px solid var(--bd);
+      border-left:4px solid var(--blue);
+      border-radius:10px;
+      padding:10px 16px;
+      margin:0 0 1rem;
+      list-style:none;
+      font-size:13px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.03);
+    }
+    ul.messages li { margin:.35rem 0; }
+    ul.messages strong { text-transform: capitalize; }
+
+    fieldset {
+      border:1px solid var(--bd);
+      border-radius:10px;
+      padding:10px 16px;
+      background:#fff;
+      margin-top:10px;
+    }
+    legend { font-weight:700; font-size:14px; }
+
+    a { color:#2563eb; font-weight:600; font-size:13px; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    .muted { color: var(--muted); font-size:13px; }
   </style>
 </head>
 <body>
-  <h1>Create account</h1>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul class="messages">
-        {% for c, m in messages %}
-          <li><strong>{{ c }}:</strong> {{ m }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+  <div class="panel">
+    <h1>Create account</h1>
 
-  <form method="post" action="{{ url_for('signup') }}">
-    <label>
-      Full name
-      <input name="full_name" required />
-    </label>
+    <!-- PRESERVED FLASH MESSAGE FUNCTION -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="messages">
+          {% for c, m in messages %}
+            <li><strong>{{ c }}:</strong> {{ m }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
-    <label>
-      Email
-      <input
-        type="text"
-        name="email"
-        required
-        pattern="^\d{10}@student\.csn\.edu$|^[A-Za-z]+\.[A-Za-z]+@csn\.edu$"
-        title="Student: 10digits@student.csn.edu  |  Faculty: firstname.lastname@csn.edu" />
-    </label>
+    <!-- PRESERVED FORM ACTION + FIELD NAMES + PATTERNS -->
+    <form method="post" action="{{ url_for('signup') }}">
 
-    <label>
-      Password
-      <input
-        type="password"
-        name="password"
-        required
-        pattern="^\d{10}$|^.{7,}$"
-        title="Student: exactly 10 digits (your NSHE). Faculty: at least 7 characters." />
-    </label>
+      <label>
+        Full name
+        <input name="full_name" required />
+      </label>
 
-    <label>
-      Confirm
-      <input
-        type="password"
-        name="confirm"
-        required
-        pattern="^\d{10}$|^.{7,}$"
-        title="Re-enter the same password." />
-    </label>
+      <label>
+        Email
+        <input
+          type="text"
+          name="email"
+          required
+          pattern="^\d{10}@student\.csn\.edu$|^[A-Za-z]+\.[A-Za-z]+@csn\.edu$"
+          title="Student: 10digits@student.csn.edu  |  Faculty: firstname.lastname@csn.edu" />
+      </label>
 
-    <fieldset>
-      <legend>Role</legend>
-      <label><input type="radio" name="role" value="student" checked /> Student</label>
-      <label><input type="radio" name="role" value="faculty" /> Faculty</label>
-    </fieldset>
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          required
+          pattern="^\d{10}$|^.{7,}$"
+          title="Student: exactly 10 digits (your NSHE). Faculty: at least 7+ characters." />
+      </label>
 
-    <button type="submit">Create Account</button>
-  </form>
+      <label>
+        Confirm
+        <input
+          type="password"
+          name="confirm"
+          required
+          pattern="^\d{10}$|^.{7,}$"
+          title="Re-enter the same password." />
+      </label>
 
-  <p><a href="{{ url_for('login') }}">Have an account? Log in</a></p>
+      <fieldset>
+        <legend>Role</legend>
+        <label><input type="radio" name="role" value="student" checked /> Student</label>
+        <label><input type="radio" name="role" value="faculty" /> Faculty</label>
+      </fieldset>
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn">Create Account</button>
+        <a class="btn" href="{{ url_for('login') }}">Have an account? Log in</a>
+      </div>
+
+    </form>
+  </div>
+
 </body>
 </html>
