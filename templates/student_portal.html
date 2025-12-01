@@ -3,30 +3,189 @@
 <head>
   <meta charset="utf-8" />
   <title>Student Dashboard</title>
+
+  <!-- GOOGLE FONT -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" 
+    rel="stylesheet" 
+  />
+
   <style>
-    body { font-family: system-ui, Arial, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
-    .btn { display: inline-block; padding: 0.35rem 0.6rem; border: 1px solid #ccc; border-radius: 6px; background: white; text-decoration: none; cursor: pointer; }
-    .btn + .btn { margin-left: 0.5rem; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, Arial, sans-serif;
+      background: #f5f7fa;
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      color: #111827;
+    }
 
-    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
-    .calendar { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-    .cal-header { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 1rem; background: #f7f7f7; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #eee; }
-    .dow, .cell { padding: 0.5rem; border-right: 1px solid #eee; border-bottom: 1px solid #eee; min-height: 110px; }
-    .dow { background: #fafafa; font-weight: 600; text-align: center; }
-    .cell:last-child, .dow:last-child { border-right: 0; }
-    .day { font-size: 0.9rem; color: #444; margin-bottom: 0.25rem; }
-    .session { font-size: 0.85rem; margin: 0.25rem 0; padding: 0.35rem; border-radius: 6px; background: #f0f7ff; border: 1px solid #dbe9ff; }
-    .muted { color: #999; }
+    /* TOP BAR */
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(to right,#2563eb,#4f46e5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-    .sidebar { border: 1px solid #ddd; border-radius: 8px; padding: 0.75rem; }
-    .messages { list-style: none; padding-left: 0; }
-    .badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid #cde; background: #eaf4ff; }
-    .badge.full { border-color: #f5c07a; background: #fff6e8; }
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    }
+    .btn:hover {
+      background: #f3f4f6;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    /* GRID LAYOUT */
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+    }
+
+    /* CALENDAR */
+    .calendar {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+    .dow {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 0;
+      background: #f3f4f6;
+      border-right: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .dow:last-child { border-right: 0; }
+
+    .cell {
+      border-right: 1px solid #f3f4f6;
+      border-bottom: 1px solid #f3f4f6;
+      min-height: 120px;
+      padding: 10px;
+      background: #ffffff;
+      transition: 0.1s;
+    }
+    .cell:hover { background: #f9fafb; }
+    .cell:last-child { border-right: 0; }
+    .muted { color: #9ca3af; }
+
+    .day {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    /* SESSION CARD */
+    .session {
+      font-size: 13px;
+      margin: 5px 0;
+      padding: 9px;
+      background: #eff6ff;
+      border: 1px solid #2563eb25;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(37,99,235,0.06);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid #93c5fd;
+      background: #dbeafe;
+      color: #1e40af;
+      margin-left: 6px;
+    }
+    .badge.full {
+      border-color: #f59e0b30;
+      background: #fffbeb;
+      color: #b45309;
+    }
+
+    .muted-text { color: #9ca3af; font-size: 13px; }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .sidebar h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .sidebar ul { padding-left: 14px; margin: 0; }
+
+    /* FLASH MESSAGES */
+    .messages {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 14px;
+      background: #fff;
+      border-left: 4px solid #2563eb;
+      border-radius: 10px;
+      padding: 10px 16px;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    }
+
+    /* MOBILE */
+    @media(max-width: 760px){
+      .grid { grid-template-columns: 1fr; }
+      .top { flex-direction: column; gap: 12px; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
+
   <div class="top">
     <h1>Student Dashboard</h1>
     <div>
@@ -48,11 +207,13 @@
   {% endwith %}
 
   <div class="grid">
+
+    <!-- CALENDAR SECTION -->
     <div class="calendar">
       <div class="cal-header">
-        <a class="btn" href="{{ url_for('student_portal', year=prev_year, month=prev_month) }}">&larr; Prev</a>
-        <div><strong>{{ year }}</strong> – {{ cal.month_name[month] }}</div>
-        <a class="btn" href="{{ url_for('student_portal', year=next_year, month=next_month) }}">Next &rarr;</a>
+        <a class="btn" href="{{ url_for('student_portal', year=prev_year, month=prev_month) }}">&larr;</a>
+        <span>{{ year }} — {{ cal.month_name[month] }}</span>
+        <a class="btn" href="{{ url_for('student_portal', year=next_year, month=next_month) }}">&rarr;</a>
       </div>
 
       <div class="cal-grid">
@@ -60,12 +221,10 @@
           <div class="dow">{{ d }}</div>
         {% endfor %}
 
-        {# leading blanks #}
-        {% set first_weekday = cal.weekday(year, month, 1) %} {# Mon=0...Sun=6 #}
+        {% set first_weekday = cal.weekday(year, month, 1) %}
         {% set lead = (first_weekday + 1) % 7 %}
         {% for _ in range(lead) %}<div class="cell muted"></div>{% endfor %}
 
-        {# actual days #}
         {% set last_day = cal.monthrange(year, month)[1] %}
         {% for day in range(1, last_day+1) %}
           {% set iso = (year|string) ~ '-' ~ ('%02d' % month) ~ '-' ~ ('%02d' % day) %}
@@ -75,7 +234,7 @@
             {% for s in by_day.get(iso, []) %}
               <div class="session">
                 <div>
-                  <strong>{{ s.exam_code }}</strong> @ {{ s.session_datetime.strftime("%I:%M %p") }}
+                  {{ s.exam_code }} {{ s.session_datetime.strftime("%I:%M %p") }}
                   {% if s.already_registered %}
                     <span class="badge">Registered</span>
                   {% elif s.is_full %}
@@ -91,28 +250,31 @@
       </div>
     </div>
 
+    <!-- SIDEBAR SECTION -->
     <aside class="sidebar">
       <h3>Upcoming Sessions</h3>
       {% if upcoming %}
         <ul>
           {% for s in upcoming %}
-            <li style="margin-bottom: 0.5rem;">
-              <strong>{{ s.exam_code }}</strong>,
-              {{ s.session_datetime.strftime('%b %d, %Y %I:%M %p') }},
-              {{ s.campus_name }} ({{ s.building_name }} {{ s.room_number }})
+            <li style="margin-bottom: 12px;">
+              {{ s.exam_code }}<br/>
+              {{ s.session_datetime.strftime('%b %d, %Y %I:%M %p') }}<br/>
+              {{ s.campus_name }} • {{ s.building_name }} {{ s.room_number }}<br/>
               {% if s.already_registered %}
                 <span class="badge">Registered</span>
               {% elif s.is_full %}
                 <span class="badge full">Full</span>
               {% endif %}
-              <br/>Seats: {{ s.booked }}/{{ s.capacity }}
+              <div>Seats: {{ s.booked }}/{{ s.capacity }}</div>
             </li>
           {% endfor %}
         </ul>
       {% else %}
-        <p class="muted">No sessions this month yet.</p>
+        <p class="muted-text">No sessions this month yet</p>
       {% endif %}
     </aside>
+
   </div>
+
 </body>
 </html>
