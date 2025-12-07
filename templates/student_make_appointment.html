@@ -14,23 +14,104 @@
 
   <style>
     * { box-sizing: border-box; }
-    :root { --bd:#e5e7eb; --muted:#6b7280; }
+
+    /* -----------------------------------------
+       🔵 DARK MODE SYSTEM (ADDED)
+       ----------------------------------------- */
+    :root {
+      --csn-blue: #00345f;
+      --csn-gold: #ffb81c;
+
+      --bg:#f5f7fa;
+      --fg:#111827;
+      --card-bg:#ffffff;
+      --border:#e5e7eb;
+      --subtext:#6b7280;
+
+      /* original vars preserved */
+      --bd:#e5e7eb;
+      --muted:#6b7280;
+
+      --session-bg:#eff6ff;
+      --session-border:#2563eb25;
+      --badge-blue-bg:#dbeafe;
+      --badge-blue-border:#93c5fd;
+      --badge-blue-text:#1e40af;
+
+      --badge-full-bg:#fffbeb;
+      --badge-full-border:#f59e0b30;
+      --badge-full-text:#b45309;
+    }
+
+    .dark-mode {
+      --bg:#0f172a;
+      --fg:#f3f4f6;
+      --card-bg:#1e293b;
+      --border:#334155;
+      --subtext:#cbd5e1;
+
+      --bd:#334155;
+      --muted:#cbd5e1;
+
+      --session-bg:#1e293b;
+      --session-border:#334155;
+
+      --badge-blue-bg:#1e3a8a;
+      --badge-blue-border:#3b82f6;
+      --badge-blue-text:#bfdbfe;
+
+      --badge-full-bg:#3f2d13;
+      --badge-full-border:#fbbf24;
+      --badge-full-text:#fde68a;
+    }
+
     body {
       font-family: 'Inter', system-ui, Arial, sans-serif;
-      background: #f5f7fa;
+      background: var(--bg);
       max-width: 1100px;
       margin: 2rem auto;
       padding: 0 1rem;
-      color: #111827;
+      color: var(--fg);
+      transition: background 0.25s, color 0.25s;
     }
 
-    /* TOP BAR */
+    /* -----------------------------------------
+       🔵 DARK MODE TOGGLE (ADDED)
+       ----------------------------------------- */
+    .toggle-container {
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:1rem;
+    }
+    .toggle-btn {
+      width:46px;
+      height:22px;
+      background:#d1d5db;
+      border-radius:999px;
+      position:relative;
+      cursor:pointer;
+    }
+    .toggle-circle {
+      width:18px;
+      height:18px;
+      background:white;
+      border-radius:50%;
+      position:absolute;
+      top:2px;
+      left:3px;
+      transition:0.25s ease;
+    }
+    .dark-mode .toggle-circle { transform:translateX(24px); }
+
+    /* ----------------------------------------- */
+
     .top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1rem;
     }
+
     h1 {
       font-size: 28px;
       font-weight: 700;
@@ -40,21 +121,21 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 8px 12px;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--border);
       border-radius: 10px;
-      background: #ffffff;
+      background: var(--card-bg);
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
       transition: 0.15s ease;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07);
       cursor: pointer;
+      color: var(--fg);
     }
     .btn:hover {
       background: #f3f4f6;
@@ -62,69 +143,106 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     }
 
-    /* PANEL */
     .panel {
-      background:#ffffff;
-      border:1px solid var(--bd);
-      border-radius:14px;
-      padding:20px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.04);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       margin-bottom: 1.4rem;
+      color: var(--fg);
     }
+
     label {
       display:block;
       margin:.75rem 0 .3rem;
       font-weight:600;
       font-size:14px;
-      color:#374151;
+      color:var(--fg);
     }
-    select { width:100%; max-width:600px; padding:10px; border:1px solid var(--bd); border-radius:10px; font-size:14px; }
 
-    /* SESSION CARD */
+    select {
+      width:100%;
+      max-width:600px;
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      font-size:14px;
+      background:var(--card-bg);
+      color:var(--fg);
+    }
+
     .session {
       font-size: 13px;
       margin: 5px 0;
       padding: 9px;
-      background: #eff6ff;
-      border: 1px solid #2563eb25;
+      background: var(--session-bg);
+      border: 1px solid var(--session-border);
       border-radius: 10px;
       box-shadow: 0 1px 3px rgba(37,99,235,0.06);
+      color: var(--fg);
     }
+
     .badge {
       display:inline-block;
       padding:2px 7px;
       border-radius:999px;
       font-size:11px;
       font-weight:600;
-      border:1px solid #93c5fd;
-      background:#dbeafe;
-      color:#1e40af;
       margin-left:6px;
+      background:var(--badge-blue-bg);
+      border:1px solid var(--badge-blue-border);
+      color:var(--badge-blue-text);
     }
-    .badge.full { border-color:#f59e0b30; background:#fffbeb; color:#b45309; }
 
-    /* MESSAGE LIST */
+    .badge.full {
+      background:var(--badge-full-bg);
+      border-color:var(--badge-full-border);
+      color:var(--badge-full-text);
+    }
+
     .messages {
       list-style: none;
       padding-left: 0;
       margin-bottom: 14px;
-      background: #fff;
+      background: var(--card-bg);
       border-left: 4px solid #2563eb;
       border-radius: 10px;
       padding: 10px 16px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border);
       font-size: 13px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+      color: var(--fg);
     }
+
     .messages li { margin:.35rem 0; }
 
-    /* MUTED TEXT */
     .muted { color: var(--muted); font-size: 13px; }
 
-    @media(max-width:760px){ .top{flex-direction:column;align-items:flex-start;gap:10px;} }
+    /* readable link color in dark mode */
+    a { color:#2563eb; font-weight:600; }
+    .dark-mode a { color:#60a5fa; }
+
+    @media(max-width:760px){
+      .top{flex-direction:column;align-items:flex-start;gap:10px;}
+    }
   </style>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+  </script>
+
 </head>
 <body>
+
+  <!-- 🔵 DARK MODE SWITCH -->
+  <div class="toggle-container">
+    <div class="toggle-btn" onclick="toggleDarkMode()">
+      <div class="toggle-circle"></div>
+    </div>
+  </div>
 
   <div class="topbar panel">
     <h1>Make an Appointment</h1>
@@ -170,12 +288,22 @@
 
     <div>
       <h3 style="font-size:16px;font-weight:700;margin-bottom:10px;">Session Details</h3>
+
       {% for s in sessions %}
       <div class="panel">
-        <div style="font-weight:700;font-size:15px;color:#1f2937;margin-bottom:6px;">{{ s.exam_code }} • {{ s.description }}</div>
-        <div>{{ s.session_datetime.strftime("%A, %b %d, %Y %I:%M %p") }}
-          {% if s.already_registered %}<span class="badge">Registered</span>{% elif s.is_full %}<span class="badge full">Full</span>{% endif %}
+        <div style="font-weight:700;font-size:15px;color:var(--fg);margin-bottom:6px;">
+          {{ s.exam_code }} • {{ s.description }}
         </div>
+
+        <div>
+          {{ s.session_datetime.strftime("%A, %b %d, %Y %I:%M %p") }}
+          {% if s.already_registered %}
+            <span class="badge">Registered</span>
+          {% elif s.is_full %}
+            <span class="badge full">Full</span>
+          {% endif %}
+        </div>
+
         <div>Duration: {{ s.duration_minutes }} min</div>
         <div>Location: {{ s.campus_name }} • {{ s.building_name }} {{ s.room_number }}</div>
         <div>Seats: {{ s.booked }}/{{ s.capacity }}</div>
