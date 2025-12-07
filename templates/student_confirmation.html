@@ -14,21 +14,85 @@
 
   <style>
     * { box-sizing:border-box; }
+
+    /* -----------------------------------------
+       🔵 DARK MODE SYSTEM (ADDED)
+       ----------------------------------------- */
     :root {
+      --csn-blue:#00345f;
+      --csn-gold:#ffb81c;
+
+      --bg:#f5f7fa;
+      --fg:#111827;
+      --card-bg:#ffffff;
+      --border:#e5e7eb;
+      --subtext:#6b7280;
+
+      /* your originals preserved */
       --bd:#e5e7eb;
       --muted:#6b7280;
       --blue:#2563eb;
       --indigo:#4f46e5;
+
+      /* special success-card green */
+      --success-bg:#f9ffef;
+      --success-border:#d3eac3;
+    }
+
+    .dark-mode {
+      --bg:#0f172a;
+      --fg:#f3f4f6;
+      --card-bg:#1e293b;
+      --border:#334155;
+      --subtext:#cbd5e1;
+
+      --bd:#334155;
+      --muted:#cbd5e1;
+
+      /* darker green but still "success" */
+      --success-bg:#1a2e12;
+      --success-border:#3a5f27;
     }
 
     body {
       font-family:'Inter', system-ui, Arial, sans-serif;
-      background:#f5f7fa;
+      background:var(--bg);
       max-width:1100px;
       margin:2rem auto;
       padding:0 1rem;
-      color:#111827;
+      color:var(--fg);
+      transition:background 0.25s, color 0.25s;
     }
+
+    /* -----------------------------------------
+       🔵 DARK MODE TOGGLE (ADDED)
+       ----------------------------------------- */
+    .toggle-container {
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:1rem;
+    }
+    .toggle-btn {
+      width:46px;
+      height:22px;
+      background:#d1d5db;
+      border-radius:999px;
+      position:relative;
+      cursor:pointer;
+    }
+    .toggle-circle {
+      width:18px;
+      height:18px;
+      background:white;
+      border-radius:50%;
+      position:absolute;
+      top:2px;
+      left:3px;
+      transition:0.25s ease;
+    }
+    .dark-mode .toggle-circle { transform:translateX(24px); }
+
+    /* ----------------------------------------- */
 
     h1 {
       font-size:28px;
@@ -39,26 +103,25 @@
       -webkit-text-fill-color:transparent;
     }
 
-    /* CARD SURFACE */
     .card {
-      background:#f9ffef; /* preserved green intent */
-      border:1px solid var(--bd);
+      background:var(--success-bg);
+      border:1px solid var(--success-border);
       border-radius:14px;
       padding:16px 20px;
       box-shadow:0 2px 6px rgba(0,0,0,0.04);
       font-size:14px;
       line-height:1.4;
+      color:var(--fg);
     }
 
-    /* BUTTONS */
     .btn {
       display:inline-flex;
       align-items:center;
       justify-content:center;
       padding:8px 12px;
-      border:1px solid var(--bd);
+      border:1px solid var(--border);
       border-radius:10px;
-      background:#ffffff;
+      background:var(--card-bg);
       text-decoration:none;
       font-size:13px;
       font-weight:600;
@@ -66,6 +129,7 @@
       cursor:pointer;
       transition:0.15s ease;
       margin-right:.5rem;
+      color:var(--fg);
     }
     .btn:hover {
       background:#f3f4f6;
@@ -74,18 +138,34 @@
     }
 
     p.muted { color:var(--muted); font-size:13px; }
+
+    /* readable link color in dark mode */
+    .dark-mode a { color:#60a5fa; }
+
   </style>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+  </script>
+
 </head>
 <body>
 
+  <!-- 🔵 TOGGLE SWITCH -->
+  <div class="toggle-container">
+    <div class="toggle-btn" onclick="toggleDarkMode()">
+      <div class="toggle-circle"></div>
+    </div>
+  </div>
+
   <h1>You're enrolled!</h1>
 
-  <!-- PRESERVED CARD FUNCTION -->
   <div class="card">
     <p>Your exam appointment has been successfully registered. It will now appear on your dashboard calendar.</p>
   </div>
 
-  <!-- PRESERVED NAV LINKS -->
   <div style="margin-top:1rem;">
     <a class="btn" href="{{ url_for('student_portal') }}">Back to Dashboard</a>
     <a class="btn" href="{{ url_for('student_history') }}">View Appointment History</a>
