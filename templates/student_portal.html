@@ -13,14 +13,94 @@
 
   <style>
     * { box-sizing: border-box; }
+
+    /* ----------------------------------------------------
+       🔵 DARK MODE SYSTEM (ADDED — DOES NOT REMOVE ORIGINALS)
+       ---------------------------------------------------- */
+    :root {
+      --bg:#f5f7fa;
+      --fg:#111827;
+      --card-bg:#ffffff;
+      --border:#e5e7eb;
+      --subtext:#6b7280;
+
+      --cal-header-bg:#f9fafb;
+      --dow-bg:#f3f4f6;
+      --cell-bg:#ffffff;
+      --cell-hover:#f9fafb;
+
+      --session-bg:#eff6ff;
+      --session-border:#2563eb25;
+
+      --badge-blue-bg:#dbeafe;
+      --badge-blue-border:#93c5fd;
+      --badge-blue-text:#1e40af;
+
+      --badge-full-bg:#fffbeb;
+      --badge-full-border:#f59e0b30;
+      --badge-full-text:#b45309;
+    }
+
+    .dark-mode {
+      --bg:#0f172a;
+      --fg:#f3f4f6;
+      --card-bg:#1e293b;
+      --border:#334155;
+      --subtext:#cbd5e1;
+
+      --cal-header-bg:#1e293b;
+      --dow-bg:#334155;
+      --cell-bg:#1e293b;
+      --cell-hover:#0f172a;
+
+      --session-bg:#1e293b;
+      --session-border:#334155;
+
+      --badge-blue-bg:#1e3a8a;
+      --badge-blue-border:#3b82f6;
+      --badge-blue-text:#bfdbfe;
+
+      --badge-full-bg:#3f2d13;
+      --badge-full-border:#fbbf24;
+      --badge-full-text:#fde68a;
+    }
+
+    /* ---------------------------------------------------- */
     body {
       font-family: 'Inter', system-ui, Arial, sans-serif;
-      background: #f5f7fa;
+      background: var(--bg);
       max-width: 1100px;
       margin: 2rem auto;
       padding: 0 1rem;
-      color: #111827;
+      color: var(--fg);
+      transition: background 0.25s, color 0.25s;
     }
+
+    /* DARK MODE TOGGLE BUTTON */
+    .toggle-container {
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:1rem;
+    }
+    .toggle-btn {
+      width:46px;
+      height:22px;
+      background:#d1d5db;
+      border-radius:999px;
+      position:relative;
+      cursor:pointer;
+    }
+    .toggle-circle {
+      width:18px;
+      height:18px;
+      background:white;
+      border-radius:50%;
+      position:absolute;
+      top:2px;
+      left:3px;
+      transition:0.25s ease;
+    }
+    .dark-mode .toggle-circle { transform:translateX(24px); }
 
     /* TOP BAR */
     .top {
@@ -44,14 +124,15 @@
       align-items: center;
       justify-content: center;
       padding: 8px 12px;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--border);
       border-radius: 10px;
-      background: #ffffff;
+      background: var(--card-bg);
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
       transition: 0.15s ease;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      color: var(--fg);
     }
     .btn:hover {
       background: #f3f4f6;
@@ -59,7 +140,7 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     }
 
-    /* GRID LAYOUT */
+    /* GRID */
     .grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -68,64 +149,71 @@
 
     /* CALENDAR */
     .calendar {
-      background: #fff;
-      border: 1px solid #e5e7eb;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 14px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
+
     .cal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 18px;
-      background: #f9fafb;
-      border-bottom: 1px solid #e5e7eb;
+      background: var(--cal-header-bg);
+      border-bottom: 1px solid var(--border);
       font-weight: 600;
       font-size: 14px;
+      color: var(--fg);
     }
+
     .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
     }
+
     .dow {
       text-align: center;
       font-size: 13px;
       font-weight: 700;
       padding: 10px 0;
-      background: #f3f4f6;
-      border-right: 1px solid #e5e7eb;
-      border-bottom: 1px solid #e5e7eb;
+      background: var(--dow-bg);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
     }
     .dow:last-child { border-right: 0; }
 
     .cell {
-      border-right: 1px solid #f3f4f6;
-      border-bottom: 1px solid #f3f4f6;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
       min-height: 120px;
       padding: 10px;
-      background: #ffffff;
+      background: var(--cell-bg);
       transition: 0.1s;
+      color: var(--fg);
     }
-    .cell:hover { background: #f9fafb; }
+    .cell:hover { background: var(--cell-hover); }
     .cell:last-child { border-right: 0; }
-    .muted { color: #9ca3af; }
+
+    .muted { color: var(--subtext); }
 
     .day {
       font-size: 14px;
       font-weight: 700;
       margin-bottom: 6px;
-      color: #374151;
+      color: var(--fg);
     }
 
-    /* SESSION CARD */
     .session {
       font-size: 13px;
       margin: 5px 0;
       padding: 9px;
-      background: #eff6ff;
-      border: 1px solid #2563eb25;
+      background: var(--session-bg);
+      border: 1px solid var(--session-border);
       border-radius: 10px;
+      color: var(--fg);
       box-shadow: 0 1px 3px rgba(37,99,235,0.06);
     }
 
@@ -135,26 +223,28 @@
       border-radius: 999px;
       font-size: 11px;
       font-weight: 600;
-      border: 1px solid #93c5fd;
-      background: #dbeafe;
-      color: #1e40af;
       margin-left: 6px;
-    }
-    .badge.full {
-      border-color: #f59e0b30;
-      background: #fffbeb;
-      color: #b45309;
+      background: var(--badge-blue-bg);
+      border: 1px solid var(--badge-blue-border);
+      color: var(--badge-blue-text);
     }
 
-    .muted-text { color: #9ca3af; font-size: 13px; }
+    .badge.full {
+      background: var(--badge-full-bg);
+      border-color: var(--badge-full-border);
+      color: var(--badge-full-text);
+    }
+
+    .muted-text { color: var(--subtext); font-size: 13px; }
 
     /* SIDEBAR */
     .sidebar {
-      background: #fff;
-      border: 1px solid #e5e7eb;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      color: var(--fg);
     }
     .sidebar h3 {
       margin: 0 0 12px;
@@ -168,12 +258,13 @@
       list-style: none;
       padding-left: 0;
       margin-bottom: 14px;
-      background: #fff;
+      background: var(--card-bg);
       border-left: 4px solid #2563eb;
       border-radius: 10px;
       padding: 10px 16px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border);
       font-size: 13px;
+      color: var(--fg);
       box-shadow: 0 1px 4px rgba(0,0,0,0.03);
     }
 
@@ -183,8 +274,20 @@
       .top { flex-direction: column; gap: 12px; align-items: flex-start; }
     }
   </style>
+
+  <script>
+    function toggleDarkMode() { document.body.classList.toggle("dark-mode"); }
+  </script>
+
 </head>
 <body>
+
+  <!-- DARK MODE TOGGLE -->
+  <div class="toggle-container">
+    <div class="toggle-btn" onclick="toggleDarkMode()">
+      <div class="toggle-circle"></div>
+    </div>
+  </div>
 
   <div class="top">
     <h1>Student Dashboard</h1>
@@ -208,7 +311,7 @@
 
   <div class="grid">
 
-    <!-- CALENDAR SECTION -->
+    <!-- CALENDAR -->
     <div class="calendar">
       <div class="cal-header">
         <a class="btn" href="{{ url_for('student_portal', year=prev_year, month=prev_month) }}">&larr;</a>
@@ -223,7 +326,9 @@
 
         {% set first_weekday = cal.weekday(year, month, 1) %}
         {% set lead = (first_weekday + 1) % 7 %}
-        {% for _ in range(lead) %}<div class="cell muted"></div>{% endfor %}
+        {% for _ in range(lead) %}
+          <div class="cell muted"></div>
+        {% endfor %}
 
         {% set last_day = cal.monthrange(year, month)[1] %}
         {% for day in range(1, last_day+1) %}
@@ -250,7 +355,7 @@
       </div>
     </div>
 
-    <!-- SIDEBAR SECTION -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <h3>Upcoming Sessions</h3>
       {% if upcoming %}
