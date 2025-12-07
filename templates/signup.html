@@ -14,20 +14,75 @@
 
   <style>
     *{ box-sizing: border-box; }
+
+    /* -----------------------------------------
+       🔵 DARK MODE SYSTEM (ADDED)
+       ----------------------------------------- */
     :root {
+      --csn-blue:#00345f;
+      --csn-gold:#ffb81c;
+
+      --bg:#f5f7fa;
+      --fg:#111827;
+      --card-bg:#ffffff;
+      --border:#e5e7eb;
+      --subtext:#6b7280;
+
+      /* your originals preserved */
       --bd: #e5e7eb;
       --muted: #6b7280;
       --blue:#2563eb;
       --indigo:#4f46e5;
     }
+    .dark-mode {
+      --bg:#0f172a;
+      --fg:#f3f4f6;
+      --card-bg:#1e293b;
+      --border:#334155;
+      --subtext:#cbd5e1;
+
+      --bd:#334155;
+    }
+
     body {
       font-family: 'Inter', system-ui, Arial, sans-serif;
-      background: #f5f7fa;
+      background: var(--bg);
       max-width: 960px;
       margin: 2rem auto;
       padding: 0 1rem;
-      color: #111827;
+      color: var(--fg);
+      transition: background 0.25s, color 0.25s;
     }
+
+    /* -----------------------------------------
+       🔵 DARK MODE TOGGLE (ADDED)
+       ----------------------------------------- */
+    .toggle-container {
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:1rem;
+    }
+    .toggle-btn {
+      width:46px;
+      height:22px;
+      background:#d1d5db;
+      border-radius:999px;
+      position:relative;
+      cursor:pointer;
+    }
+    .toggle-circle {
+      width:18px;
+      height:18px;
+      background:white;
+      border-radius:50%;
+      position:absolute;
+      top:2px;
+      left:3px;
+      transition:all 0.25s ease;
+    }
+    .dark-mode .toggle-circle { transform:translateX(24px); }
+
+    /* ----------------------------------------- */
 
     h1 {
       font-size: 28px;
@@ -38,17 +93,16 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* PANEL CARD SURFACE */
     .panel {
-      background:#ffffff;
-      border:1px solid var(--bd);
+      background: var(--card-bg);
+      border:1px solid var(--border);
       border-radius:14px;
       padding:18px 20px;
       margin-bottom:1.2rem;
       box-shadow:0 2px 8px rgba(0,0,0,0.04);
+      color:var(--fg);
     }
 
-    /* INPUTS */
     input[type="text"],
     input[type="password"],
     input[name="full_name"],
@@ -58,39 +112,39 @@
       padding:10px;
       width:100%;
       max-width:420px;
-      border:1px solid var(--bd);
+      border:1px solid var(--border);
       border-radius:10px;
       font-size:14px;
-      background:#fff;
+      background:var(--card-bg);
+      color:var(--fg);
       box-shadow:0 1px 2px rgba(0,0,0,0.05);
       margin-top:5px;
       display:block;
     }
 
-    /* LABELS */
     form label {
       display: block;
       font-weight:600;
       font-size:14px;
-      color:#374151;
+      color:var(--fg);
       margin:0.6rem 0;
     }
 
-    /* BUTTONS */
     .btn, button[type="submit"] {
       display:inline-flex;
       align-items:center;
       justify-content:center;
       padding:8px 14px;
-      border:1px solid var(--bd);
+      border:1px solid var(--border);
       border-radius:10px;
-      background:#ffffff;
+      background:var(--card-bg);
       text-decoration:none;
       font-size:13px;
       font-weight:600;
       box-shadow:0 1px 3px rgba(0,0,0,0.07);
       cursor:pointer;
       transition:0.15s ease;
+      color:var(--fg);
     }
     .btn:hover, button[type="submit"]:hover {
       background:#f3f4f6;
@@ -98,10 +152,9 @@
       box-shadow:0 3px 6px rgba(0,0,0,0.1);
     }
 
-    /* FLASH MESSAGES (preserved logic, restyled surface) */
     ul.messages {
-      background:#ffffff;
-      border:1px solid var(--bd);
+      background:var(--card-bg);
+      border:1px solid var(--border);
       border-left:4px solid var(--blue);
       border-radius:10px;
       padding:10px 16px;
@@ -109,31 +162,49 @@
       list-style:none;
       font-size:13px;
       box-shadow:0 1px 4px rgba(0,0,0,0.03);
+      color:var(--fg);
     }
     ul.messages li { margin:.35rem 0; }
     ul.messages strong { text-transform: capitalize; }
 
     fieldset {
-      border:1px solid var(--bd);
+      border:1px solid var(--border);
       border-radius:10px;
       padding:10px 16px;
-      background:#fff;
+      background:var(--card-bg);
       margin-top:10px;
+      color:var(--fg);
     }
-    legend { font-weight:700; font-size:14px; }
+    legend { font-weight:700; font-size:14px; color:var(--fg); }
 
-    a { color:#2563eb; font-weight:600; font-size:13px; text-decoration:none; }
+    a { color: var(--blue); font-weight:600; font-size:13px; text-decoration:none; }
     a:hover { text-decoration:underline; }
+
+    /* 🔧 Dark mode readable link color */
+    .dark-mode a { color:#60a5fa; }
 
     .muted { color: var(--muted); font-size:13px; }
   </style>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+  </script>
+
 </head>
 <body>
+
+  <!-- 🔵 DARK MODE SWITCH -->
+  <div class="toggle-container">
+    <div class="toggle-btn" onclick="toggleDarkMode()">
+      <div class="toggle-circle"></div>
+    </div>
+  </div>
 
   <div class="panel">
     <h1>Create account</h1>
 
-    <!-- PRESERVED FLASH MESSAGE FUNCTION -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul class="messages">
@@ -144,7 +215,6 @@
       {% endif %}
     {% endwith %}
 
-    <!-- PRESERVED FORM ACTION + FIELD NAMES + PATTERNS -->
     <form method="post" action="{{ url_for('signup') }}">
 
       <label>
