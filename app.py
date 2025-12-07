@@ -107,7 +107,7 @@ def fetch_sessions_between(start_dt: datetime, end_dt: datetime, user_id: int | 
             l.campus_name, l.building_name, l.room_number,
             es.capacity,
             COUNT(r.id) AS booked
-        FROM exam_sessions es
+        FROM examsessions es
         JOIN exams e      ON e.id = es.exam_id
         JOIN locations l  ON l.id = es.location_id
         LEFT JOIN registrations r ON r.session_id = es.id AND r.cancelled = 0
@@ -144,7 +144,7 @@ def fetch_upcoming_for_student(user_id: int, limit: int = 10):
               WHERE r2.session_id = es.id AND r2.cancelled = 0
             ) AS booked
         FROM registrations r
-        JOIN exam_sessions es ON es.id = r.session_id
+        JOIN examsessions es ON es.id = r.session_id
         JOIN exams e          ON e.id = es.exam_id
         JOIN locations l      ON l.id = es.location_id
         WHERE r.user_id = %s
@@ -309,7 +309,7 @@ def student_portal():
             COALESCE(b.booked, 0) AS booked,
             r.id AS registration_id
         FROM registrations r
-        JOIN exam_sessions s ON s.id = r.session_id
+        JOIN examsessions s ON s.id = r.session_id
         JOIN exams e        ON e.id = s.exam_id
         JOIN locations l    ON l.id = s.location_id
         LEFT JOIN (
@@ -344,7 +344,7 @@ def student_portal():
             COALESCE(b.booked, 0) AS booked,
             r.id AS registration_id
         FROM registrations r
-        JOIN exam_sessions s ON s.id = r.session_id
+        JOIN examsessions s ON s.id = r.session_id
         JOIN exams e        ON e.id = s.exam_id
         JOIN locations l    ON l.id = s.location_id
         LEFT JOIN (
@@ -414,7 +414,7 @@ def student_make_appointment():
                    (SELECT COUNT(*) FROM registrations r
                       WHERE r.session_id = es.id AND r.cancelled = 0) AS booked,
                    es.capacity
-            FROM exam_sessions es
+            FROM examsessions es
             JOIN exams e      ON e.id = es.exam_id
             JOIN locations l  ON l.id = es.location_id
             WHERE es.id NOT IN (
@@ -431,6 +431,25 @@ def student_make_appointment():
         return render_template("student_make_appointment.html", sessions=sessions)
 
     # ---------- POST: make appointment ----------
+
+    # ENFORCE MAX 3 ACTIVE FUTURE REGISTRATIONS
+    cur.execute(
+        """
+        SELECT COUNT(*) AS active_count
+        FROM registrations r
+        JOIN examsessions es ON es.id = r.session_id
+        WHERE r.user_id = %s
+          AND r.cancelled = 0
+          AND es.session_datetime >= NOW()
+        """,
+        (user_id,),
+    )
+    row = cur.fetchone()
+    if row and row["active_count"] >= 3:
+        cur.close(); conn.close()
+        flash("You already have 3 active exam appointments. Cancel one before booking another.", "error")
+        return redirect(url_for("student_portal"))
+
     session_id = request.form.get("session_id", "").strip()
     if not session_id.isdigit():
         cur.close(); conn.close()
@@ -445,7 +464,7 @@ def student_make_appointment():
         SELECT es.id, es.capacity,
                (SELECT COUNT(*) FROM registrations r
                   WHERE r.session_id = es.id AND r.cancelled = 0) AS booked
-        FROM exam_sessions es
+        FROM examsessions es
         WHERE es.id = %s
         """,
         (session_id,),
@@ -486,7 +505,7 @@ def student_make_appointment():
             SELECT es.capacity,
                    (SELECT COUNT(*) FROM registrations r
                       WHERE r.session_id = es.id AND r.cancelled = 0) AS booked
-            FROM exam_sessions es
+            FROM examsessions es
             WHERE es.id = %s
             FOR UPDATE
             """,
@@ -529,7 +548,7 @@ def student_make_appointment():
             l.campus_name, l.building_name, l.room_number,
             es.capacity,
             COUNT(r.id) AS booked
-        FROM exam_sessions es
+        FROM examsessions es
         JOIN exams e       ON e.id = es.exam_id
         JOIN locations l   ON l.id = es.location_id
         LEFT JOIN registrations r ON r.session_id = es.id AND r.cancelled = 0
@@ -578,7 +597,7 @@ def student_cancel_page():
             es.session_datetime,
             l.campus_name, l.building_name, l.room_number
         FROM registrations r
-        JOIN exam_sessions es ON es.id = r.session_id
+        JOIN examsessions es ON es.id = r.session_id
         JOIN exams e          ON e.id = es.exam_id
         JOIN locations l      ON l.id = es.location_id
         WHERE r.user_id = %s
@@ -638,10 +657,15 @@ def student_history():
             es.session_datetime,
             e.exam_code,
             r.cancelled,
-            r.cancelled_at
+            r.cancelled_at,
+            r.registered_at,
+            l.campus_name,
+            l.building_name,
+            l.room_number
         FROM registrations r
-        JOIN exam_sessions es ON es.id = r.session_id
+        JOIN examsessions es ON es.id = r.session_id
         JOIN exams e          ON e.id = es.exam_id
+        JOIN locations l      ON l.id = es.location_id
         WHERE r.user_id = %s
         ORDER BY es.session_datetime DESC, r.id DESC
         """,
@@ -650,15 +674,22 @@ def student_history():
     rows = cur.fetchall()
     cur.close(); conn.close()
 
-    # Compute status for display
     now = datetime.now()
     for row in rows:
         if row["cancelled"]:
-            row["status"] = "Canceled"
+            if row["cancelled_at"]:
+                row["status"] = f"Canceled ({row['cancelled_at'].strftime('%b %d, %Y')})"
+            else:
+                row["status"] = "Canceled"
         else:
-            row["status"] = "Completed" if row["session_datetime"] < now else "Registered"
+            # upcoming vs attended
+            if row["session_datetime"] >= now:
+                row["status"] = "Upcoming"
+            else:
+                row["status"] = "Attended"
 
-    return render_template("student_history.html", history=rows)
+    # IMPORTANT: pass as 'rows' because your template uses 'rows'
+    return render_template("student_history.html", rows=rows)
 
 # -----------------------
 # FACULTY: Dashboard + Create Session
@@ -717,7 +748,7 @@ def faculty_new_session():
         try:
             cur.execute(
                 """
-                INSERT INTO exam_sessions (exam_id, session_datetime, location_id, creator_id, proctor_id, capacity)
+                INSERT INTO examsessions (exam_id, session_datetime, location_id, creator_id, proctor_id, capacity)
                 VALUES (%s,%s,%s,%s,%s,%s)
                 """,
                 (exam_id, dt, location_id, session.get("user_id"), session.get("user_id"), capacity),
